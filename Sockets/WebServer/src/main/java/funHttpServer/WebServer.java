@@ -274,15 +274,33 @@ class WebServer {
           // extract required fields from parameters
           String string = query_pairs.get("text");
 
-          // add the string to the story
-          sb.append(string);
-          sb.append("<br>");
-
           // Generate response
-          builder.append("HTTP/1.1 200 OK\n");
-          builder.append("Content-Type: text/html; charset=utf-8\n");
-          builder.append("\n");
-          builder.append(string);
+          if (!request.contains("text=")) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Invalid parameters");
+          }else if (string.length() > 800) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Test too long");
+          } else if (string.isEmpty() || string == null) {
+              builder.append("HTTP/1.1 400 Bad Request\n");
+              builder.append("Content-Type: text/html; charset=utf-8\n");
+              builder.append("\n");
+              builder.append("Empty Text");
+          }else {
+
+            // add the string to the story
+            sb.append(string);
+            sb.append("<br>");
+
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append(string);
+          }
 
           // TODO: Include error handling here with a correct error code and
           // a response that makes sense
