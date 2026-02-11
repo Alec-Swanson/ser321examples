@@ -31,6 +31,9 @@ class WebServer {
     WebServer server = new WebServer(9000);
   }
 
+  String story = "";
+  StringBuilder sb = new StringBuilder();
+
   /**
    * Main thread
    * @param port to listen on
@@ -217,6 +220,30 @@ class WebServer {
           // TODO: Include error handling here with a correct error code and
           // a response that makes sense
 
+        } else if (request.contains("add?")) {
+          // This does some bad math, there is NO error handling, so when
+          // wrong data is given this just crashes
+
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          // extract path parameters
+          query_pairs = splitQuery(request.replace("add?", ""));
+
+          // extract required fields from parameters
+          Integer num1 = Integer.parseInt(query_pairs.get("num1"));
+          Integer num2 = Integer.parseInt(query_pairs.get("num2"));
+
+          // do math
+          Integer result =  num1 + num2;
+
+          // Generate response
+          builder.append("HTTP/1.1 200 OK\n");
+          builder.append("Content-Type: text/html; charset=utf-8\n");
+          builder.append("\n");
+          builder.append("Result is: " + result);
+
+          // TODO: Include error handling here with a correct error code and
+          // a response that makes sense
+
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
           // check out https://docs.github.com/rest/reference/
@@ -237,6 +264,39 @@ class WebServer {
           builder.append("Check the todos mentioned in the Java source file");
           // TODO: Parse the JSON returned by your fetch and create an appropriate
           // response based on what the assignment document asks for
+
+        } else if (request.contains("addline?")) {
+
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          // extract path parameters
+          query_pairs = splitQuery(request.replace("addline?", ""));
+
+          // extract required fields from parameters
+          String string = query_pairs.get("text");
+
+          // add the string to the story
+          sb.append(string);
+          sb.append("<br>");
+
+          // Generate response
+          builder.append("HTTP/1.1 200 OK\n");
+          builder.append("Content-Type: text/html; charset=utf-8\n");
+          builder.append("\n");
+          builder.append(string);
+
+          // TODO: Include error handling here with a correct error code and
+          // a response that makes sense
+
+        } else if (request.contains("story")) {
+
+          // Generate response
+          builder.append("HTTP/1.1 200 OK\n");
+          builder.append("Content-Type: text/html; charset=utf-8\n");
+          builder.append("\n");
+          builder.append("Here is the story<br>" + sb.toString());
+
+          // TODO: Include error handling here with a correct error code and
+          // a response that makes sense
 
         } else {
           // if the request is not recognized at all
